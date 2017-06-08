@@ -5,7 +5,7 @@ import com.season.playball.LogConsole;
 import java.util.Random;
 
 /**
- * Disc:
+ * Disc: 速度控制基类
  * User: SeasonAllan(451360508@qq.com)
  * Time: 2017-06-08 15:58
  */

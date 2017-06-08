@@ -7,7 +7,7 @@ import android.graphics.RectF;
 import android.text.TextPaint;
 
 import com.season.playball.sin.interpolator.IInterpolator;
-import com.season.playball.sin.interpolator.LinearInterpolator;
+import com.season.playball.sin.interpolator.KeepInterpolator;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -25,10 +25,25 @@ public class Ball {
 
     public boolean big(){
         radius = radius + 2;
+        radius = Math.min(width / 5, radius);
         if (radius >= width/5){
             return true;
         }else{
-            radius = Math.min(width / 5, radius);
+            textPaint.setTextSize(radius * 2 / 3);
+            Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
+            textX = textPaint.measureText("0.00") / 2;
+            //LogConsole.log("descent=" + fontMetrics.descent + "  ascent=" + fontMetrics.ascent);
+            textY = (fontMetrics.descent - fontMetrics.ascent) / 4;
+            return false;
+        }
+    }
+
+    public boolean small(){
+        radius = radius - 2;
+        radius = Math.max(minRadius * 1, radius);
+        if (radius <= minRadius * 1){
+            return true;
+        }else{
             textPaint.setTextSize(radius * 2 / 3);
             Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
             textX = textPaint.measureText("0.00") / 2;
@@ -71,7 +86,7 @@ public class Ball {
         ball.textX = ball.textPaint.measureText("0.00") / 2;
         //LogConsole.log("descent=" + fontMetrics.descent + "  ascent=" + fontMetrics.ascent);
         ball.textY = (fontMetrics.descent - fontMetrics.ascent) / 4;
-        ball.ballInterpolator = new LinearInterpolator();
+        ball.ballInterpolator = new KeepInterpolator();
         ball.ballInterpolator.resetSpeed(ballInterpolator.getSpeed());
         return ball;
     }
@@ -279,8 +294,8 @@ public class Ball {
         if (special > 0){
             //ballInterpolator.speedChange(0, crashModel.ballInterpolator);
         }else{
-            int speedCost = getSpeedCost(degree, slopDegree);
-            ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
+            //int speedCost = getSpeedCost(degree, slopDegree);
+            //ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
         }
     }
 

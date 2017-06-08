@@ -6,10 +6,8 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextPaint;
 
-import com.season.playball.LogConsole;
-
 /**
- * Disc:
+ * Disc: 触摸浮窗
  * User: SeasonAllan(451360508@qq.com)
  * Time: 2017-06-08 19:14
  */

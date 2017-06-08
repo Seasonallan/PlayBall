@@ -1,7 +1,7 @@
 package com.season.playball.sin.interpolator;
 
 /**
- * Disc:
+ * Disc: 速度控制器接口
  * User: SeasonAllan(451360508@qq.com)
  * Time: 2017-06-08 15:44
  */

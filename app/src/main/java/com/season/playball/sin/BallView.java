@@ -62,7 +62,11 @@ public class BallView extends View {
             for (Ball checkBall : ballList) {
                 if (currentBall.id != checkBall.id) {
                     if (currentBall.isCrash(checkBall)) {
-                        currentBall.clickSpecial = checkBall.special;
+                        if (checkBall.special > 0){
+                            currentBall.clickSpecial = checkBall.special;
+                        }else{
+                            currentBall.clickSpecial = 5;
+                        }
                         currentBall.crashChanged(checkBall);
                     }
                 }
@@ -87,8 +91,12 @@ public class BallView extends View {
                     if (separateList.size() > 0){
                         ballList.remove(ball);
                         ballList.addAll(separateList);
+                    }else{
+                        ballList.remove(ball);
                     }
                 }
+            }else if (ball.clickSpecial == 5){
+                //ball.small();
             }
         }
     }

@@ -3,7 +3,7 @@ package com.season.playball.sin.interpolator;
 import java.util.Random;
 
 /**
- * Disc:
+ * Disc: 速度控制工厂
  * User: SeasonAllan(451360508@qq.com)
  * Time: 2017-06-08 15:48
  */
