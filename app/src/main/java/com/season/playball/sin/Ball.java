@@ -6,10 +6,12 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextPaint;
 
-import com.season.playball.LogConsole;
 import com.season.playball.sin.interpolator.IInterpolator;
+import com.season.playball.sin.interpolator.LinearInterpolator;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,6 +20,61 @@ import java.util.Random;
  * Time: 2017-06-08 12:08
  */
 public class Ball {
+
+    int minRadius = 40;
+
+    public boolean big(){
+        radius = radius + 2;
+        if (radius >= width/5){
+            return true;
+        }else{
+            radius = Math.min(width / 5, radius);
+            textPaint.setTextSize(radius * 2 / 3);
+            Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
+            textX = textPaint.measureText("0.00") / 2;
+            //LogConsole.log("descent=" + fontMetrics.descent + "  ascent=" + fontMetrics.ascent);
+            textY = (fontMetrics.descent - fontMetrics.ascent) / 4;
+            return false;
+        }
+    }
+
+    public List<Ball> separate() {
+        List<Ball> ballList = new ArrayList<>();
+        int newRadius = radius*1/2;
+        if (newRadius >= minRadius){
+            ballList.add(cloneBall(newRadius));
+            ballList.add(cloneBall(-newRadius));
+        }
+        return ballList;
+    }
+    public Ball cloneSameBall(){
+        return cloneBall(radius);
+    }
+
+    public Ball cloneBall(int r){
+        Ball ball = new Ball();
+        ball.id = System.currentTimeMillis() + new Random().nextLong();
+        ball.cx = cx + r;
+        ball.cy = cy + r;
+        ball.radius = Math.abs(r);
+        ball.slopDegree = slopDegree;
+        ball.special = special;
+        ball.color = 0xff000000 | new Random().nextInt(0x00ffffff);;
+        ball.width = width;
+        ball.height = height;
+        ball.paint = new Paint();
+        ball.paint.setColor(color);
+        ball.textPaint = new TextPaint();
+        ball.textPaint.setColor(Color.WHITE);
+        ball.textPaint.setTextSize(ball.radius * 2 / 3);
+        Paint.FontMetricsInt fontMetrics = ball.textPaint.getFontMetricsInt();
+        ball.textX = ball.textPaint.measureText("0.00") / 2;
+        //LogConsole.log("descent=" + fontMetrics.descent + "  ascent=" + fontMetrics.ascent);
+        ball.textY = (fontMetrics.descent - fontMetrics.ascent) / 4;
+        ball.ballInterpolator = new LinearInterpolator();
+        ball.ballInterpolator.resetSpeed(ballInterpolator.getSpeed());
+        return ball;
+    }
 
     /**
      * 构建一个球
@@ -37,6 +94,11 @@ public class Ball {
 
         public Builder setId(long id) {
             ball.id = id;
+            return this;
+        }
+
+        public Builder setSpecial(int special) {
+            ball.special = special;
             return this;
         }
 
@@ -61,6 +123,8 @@ public class Ball {
     double slopDegree = 3;
 
     long id;
+    int special;
+    int clickSpecial;
 
     IInterpolator ballInterpolator;
 
@@ -128,7 +192,7 @@ public class Ball {
     void randomSetUp() {
         if (radius <= 0) {
             radius = new Random().nextInt(width / 5);
-            radius = Math.max(80, radius);
+            radius = Math.max(minRadius, radius);
         }
         if (color <= 0) {
             color = 0xff000000 | new Random().nextInt(0x00ffffff);
@@ -212,10 +276,12 @@ public class Ball {
             slopDegree += 180;
         }
 
-        int speedCost = getSpeedCost(degree, slopDegree);
-        ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
-
-
+        if (special > 0){
+            //ballInterpolator.speedChange(0, crashModel.ballInterpolator);
+        }else{
+            int speedCost = getSpeedCost(degree, slopDegree);
+            ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
+        }
     }
 
     int getSpeedCost(double from, double to) {

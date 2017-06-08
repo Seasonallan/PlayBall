@@ -62,7 +62,31 @@ public class BallView extends View {
             for (Ball checkBall : ballList) {
                 if (currentBall.id != checkBall.id) {
                     if (currentBall.isCrash(checkBall)) {
+                        currentBall.clickSpecial = checkBall.special;
                         currentBall.crashChanged(checkBall);
+                    }
+                }
+            }
+        }
+        for (int i = ballList.size() - 1; i>= 0; i--){
+            Ball ball = ballList.get(i);
+            if (ball.clickSpecial == 10){
+                if (ball.special <= 0){
+                    boolean out = ball.big();
+                    if (out){
+                        List<Ball> separateList = ball.separate();
+                        if (separateList.size() > 0){
+                            ballList.remove(ball);
+                            ballList.addAll(separateList);
+                        }
+                    }
+                }
+            }else if (ball.clickSpecial == 20){
+                if (ball.special <= 0){
+                    List<Ball> separateList = ball.separate();
+                    if (separateList.size() > 0){
+                        ballList.remove(ball);
+                        ballList.addAll(separateList);
                     }
                 }
             }
@@ -197,21 +221,24 @@ public class BallView extends View {
     /**
      * 添加一个球
      *
-     * @param parentView
      */
-    public void addOneBall(View parentView) {
+    public void addOneBall() {
         String interpolatorFlag = BallInterpolatorFactory.LINEAR;
-        if (ballList.size() == 3) {
-            interpolatorFlag = BallInterpolatorFactory.ACCELERATE;
-        }
-        if (ballList.size() == 2) {
+        int special = -1;
+        if (ballList.size() == 0) {
             interpolatorFlag = BallInterpolatorFactory.KEEP;
+            special = 10;
+        }
+        if (ballList.size() == 1) {
+            interpolatorFlag = BallInterpolatorFactory.KEEP;
+            special = 20;
         }
         IInterpolator interpolator = BallInterpolatorFactory.getInterpolator(interpolatorFlag);
         Ball ballModel = new Ball.Builder()
                 .setId(System.currentTimeMillis())
-                .setEdge(parentView.getWidth(), parentView.getHeight())
+                .setEdge(getWidth(), getHeight())
                 .setInterpolator(interpolator)
+                .setSpecial(special)
                 .build();
         ballModel.randomSetUp();
         ballList.add(ballModel);

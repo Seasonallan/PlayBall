@@ -18,4 +18,5 @@ public interface IInterpolator {
     float getSpeed();
 
     void speedChange(int speedCost, IInterpolator ballInterpolator);
+
 }

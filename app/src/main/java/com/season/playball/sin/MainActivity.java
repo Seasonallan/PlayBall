@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        mBallView.addOneBall(mContainerView);
+        mBallView.addOneBall();
     }
 
     @Override
