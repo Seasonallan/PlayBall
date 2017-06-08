@@ -97,6 +97,7 @@ public class Ball {
     float x, y;
 
     void onMove(float x, float y) {
+        isTouched = true;
         this.x = x;
         this.y = y;
         touchSpeed = (x - cx) * (x - cx) + (y - cy) * (y - cy);

@@ -15,7 +15,7 @@ public class AccelerateInterpolator extends BaseInterpolator {
     @Override
     public void speedCost() {
         if (speed > 0){
-            speed += 0.01;
+            speed += 0.1;
         }
     }
 

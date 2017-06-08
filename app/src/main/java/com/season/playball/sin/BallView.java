@@ -43,6 +43,9 @@ public class BallView extends View {
 
     public void start() {
         running = false;
+        if (touchBall != null && touchBall.isTouched) {
+            running = true;
+        }
         for (Ball ballModel : ballList) {
             if (ballModel.hasSpeed()){
                 ballModel.move();
@@ -78,7 +81,7 @@ public class BallView extends View {
             case MotionEvent.ACTION_DOWN:
                 touchBall = null;
                 touchBall = getTouchBall(x, y);
-                LogConsole.log("action_down " + touchBall);
+                LogConsole.log("ACTION_DOWN " + touchBall);
                 if (touchBall != null) {
                     ballTouchExpand = new BallTouchExpand();
                     ballTouchExpand.ball = touchBall;
@@ -98,6 +101,7 @@ public class BallView extends View {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+                LogConsole.log("ACTION_CANCEL " + touchBall);
                 if (touchBall != null) {
 //                    mVelocityTracker.computeCurrentVelocity(1, (float) 0.01);
 //                    mVelocityTracker.computeCurrentVelocity(1000);
@@ -173,7 +177,7 @@ public class BallView extends View {
         for (Ball ballModel : ballList)
             ballModel.draw(canvas);
 
-        if (touchBall != null) {
+        if (touchBall != null && touchBall.isTouched) {
             paint.setColor(touchBall.color);
             canvas.drawLine(touchBall.cx, touchBall.cy, x, y, paint);
             ballTouchExpand.onDraw(canvas, x, y);

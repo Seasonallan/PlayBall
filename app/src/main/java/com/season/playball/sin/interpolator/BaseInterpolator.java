@@ -34,7 +34,7 @@ public abstract class BaseInterpolator implements IInterpolator {
             if (speed <= 0){
                 speed = 10;//填满屏幕的时候出现叠加，一直找位置
             }
-            LogConsole.log("speedChange current="+speed+"  other="+ballInterpolator.getSpeed());
+           // LogConsole.log("speedChange current="+speed+"  other="+ballInterpolator.getSpeed());
             return;
         }
         if (speedCost< 180){//same area, speed up
