@@ -1,10 +1,16 @@
 package com.season.playball.sin;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextPaint;
 
 import com.season.playball.LogConsole;
+import com.season.playball.sin.interpolator.LinearInterpolator;
+import com.season.playball.sin.interpolator.BallInterpolatorFactory;
+import com.season.playball.sin.interpolator.IInterpolator;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 /**
@@ -19,19 +25,28 @@ public class BallModel {
     int radius;
     int color;
     Paint paint;
+    TextPaint textPaint;
 
     float cx, cy;
     double slopDegree = 3;
 
     long id;
 
-    BallInterpolator ballInterpolator;
+    IInterpolator ballInterpolator;
 
     BallModel(int width, int height){
         this.width = width;
         this.height = height;
-        ballInterpolator = new BallInterpolator();
+        ballInterpolator = new LinearInterpolator();
     }
+
+    public BallModel buildInterpolator(String flag){
+        ballInterpolator = BallInterpolatorFactory.getInterpolator(flag);
+        return this;
+    }
+
+
+    float textX, textY;
 
     void randomSetUp(){
         if (radius <= 0) {
@@ -44,6 +59,15 @@ public class BallModel {
         if (paint == null) {
             paint = new Paint();
             paint.setColor(color);
+        }
+        if (textPaint ==  null){
+            textPaint = new TextPaint();
+            textPaint.setTextSize(radius * 2 / 3);
+            textPaint.setColor(Color.WHITE);
+            Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
+            textX = textPaint.measureText("0.00")/2;
+            LogConsole.log("descent="+ fontMetrics.descent+"  ascent="+ fontMetrics.ascent);
+            textY = ( fontMetrics.descent - fontMetrics.ascent) / 4;
         }
         ballInterpolator.randomSet();
         slopDegree = new Random().nextInt(360);
@@ -90,14 +114,33 @@ public class BallModel {
         LogConsole.log(" slopDegree = " + slopDegree);
         LogConsole.log(" degree = " + degree);
 
-        if (sameArea(degree, slopDegree)){
-            slopDegree =  degree;
+        int speedCost = getSpeedCost(degree, slopDegree);
+        ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
+        float speed = ballInterpolator.getSpeed();
+        if (speed > 0){
+
+            if (sameArea(degree, slopDegree)){
+                slopDegree =  degree;
+            }else{
+                slopDegree += 180;
+                degree += 180;
+                slopDegree = degree - slopDegree + degree;
+            }
         }else{
+
+            slopDegree = crashModel.slopDegree;
             slopDegree += 180;
             degree += 180;
             slopDegree = degree - slopDegree + degree;
+            slopDegree += 180;
         }
 
+
+    }
+
+    int getSpeedCost(double from, double to){
+        int mul = (int) (from - to);
+        return mul%360;
     }
 
     /**
@@ -112,16 +155,24 @@ public class BallModel {
     }
 
     public void move() {
-        float speed = ballInterpolator.getSpeed();
-        if (speed > 0){
-            cx += speed * Math.cos(slopDegree * Math.PI / 180);
-            cy += speed * Math.sin(slopDegree * Math.PI / 180);
+        ballInterpolator.speedCost();
+        if (ballInterpolator.getSpeed() > 0){
+            cx += ballInterpolator.getSpeed() * Math.cos(slopDegree * Math.PI / 180);
+            cy += ballInterpolator.getSpeed() * Math.sin(slopDegree * Math.PI / 180);
             fixXY();
         }
     }
 
+
+
     void draw(Canvas canvas) {
         canvas.drawCircle(cx, cy, radius, paint);
+        DecimalFormat df = new DecimalFormat("###.00");
+        String speedStr = df.format(ballInterpolator.getSpeed());
+        if (speedStr.length() > 4){
+            speedStr = speedStr.substring(0, 4);
+        }
+        canvas.drawText(speedStr, cx - textX, cy + textY, textPaint);
     }
 
 

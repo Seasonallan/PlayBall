@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.os.Handler;
 import android.view.View;
 
+import com.season.playball.sin.interpolator.BallInterpolatorFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +79,12 @@ public class BallView extends View{
     public void add(View parentView) {
         BallModel ballModel = new BallModel(parentView.getWidth(), parentView.getHeight());
         ballModel.id = System.currentTimeMillis();
+        if (ballList.size() == 3){
+            ballModel.buildInterpolator(BallInterpolatorFactory.ACCELERATE);
+        }
+        if (ballList.size() == 2){
+            ballModel.buildInterpolator(BallInterpolatorFactory.KEEP);
+        }
         ballModel.randomSetUp();
         ballList.add(ballModel);
     }
