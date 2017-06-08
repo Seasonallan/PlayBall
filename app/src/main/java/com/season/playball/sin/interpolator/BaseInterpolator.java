@@ -1,5 +1,7 @@
 package com.season.playball.sin.interpolator;
 
+import com.season.playball.LogConsole;
+
 import java.util.Random;
 
 /**
@@ -21,9 +23,15 @@ public abstract class BaseInterpolator implements IInterpolator {
     }
 
     @Override
+    public void resetSpeed(float speed){
+        this.speed = speed;
+    }
+
+    @Override
     public void speedChange(int speedCost, IInterpolator ballInterpolator) {
         if (true){
             speed = (speed + ballInterpolator.getSpeed())/2;
+            LogConsole.log("speedChange current="+speed+"  other="+ballInterpolator.getSpeed());
             return;
         }
         if (speedCost< 180){//same area, speed up

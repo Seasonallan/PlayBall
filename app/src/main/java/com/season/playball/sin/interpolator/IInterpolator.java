@@ -9,6 +9,8 @@ public interface IInterpolator {
 
     String getDescription();
 
+    void resetSpeed(float speed);
+
     void randomSet();
 
     void speedCost();

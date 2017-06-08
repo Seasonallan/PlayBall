@@ -3,6 +3,7 @@ package com.season.playball.sin;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.text.TextPaint;
 
 import com.season.playball.LogConsole;
@@ -40,18 +41,39 @@ public class BallModel {
         ballInterpolator = new LinearInterpolator();
     }
 
+    boolean isTouched(float x, float y){
+        RectF rectF = new RectF(cx - radius, cy - radius, cx + radius, cy + radius);
+        if (rectF.contains(x, y)){
+            return true;
+        }
+        return false;
+    }
+
+    boolean isTouched = false;
+
+    void onTouch(){
+        isTouched = true;
+        ballInterpolator.resetSpeed(0);
+    }
+
+    void onRelease(float speed, double degree){
+        isTouched = false;
+        slopDegree = degree;
+        speed = Math.min(speed, 30);
+        ballInterpolator.resetSpeed(speed);
+    }
+
     public BallModel buildInterpolator(String flag){
         ballInterpolator = BallInterpolatorFactory.getInterpolator(flag);
         return this;
     }
-
 
     float textX, textY;
 
     void randomSetUp(){
         if (radius <= 0) {
             radius = new Random().nextInt(width / 5);
-            radius = Math.max(20, radius);
+            radius = Math.max(80, radius);
         }
         if (color <= 0) {
             color = 0xff000000 | new Random().nextInt(0x00ffffff);
@@ -97,6 +119,9 @@ public class BallModel {
     }
 
     boolean isCrash(BallModel ballView) {
+        if (isTouched){
+            return false;
+        }
         double xy = (cx - ballView.cx) * (cx - ballView.cx) + (cy - ballView.cy) * (cy - ballView.cy);
         xy = Math.sqrt(xy);
         if (xy <= radius + ballView.radius) {
@@ -109,13 +134,11 @@ public class BallModel {
         double degree = Math.atan2((cy - crashModel.cy), (cx - crashModel.cx));
         degree = 180 * degree / Math.PI;
 
-        LogConsole.log(id + " info");
-        LogConsole.log(" speed = " + ballInterpolator.getSpeed());
-        LogConsole.log(" slopDegree = " + slopDegree);
-        LogConsole.log(" degree = " + degree);
+      //  LogConsole.log(id + " info");
+       // LogConsole.log(" speed = " + ballInterpolator.getSpeed());
+      //  LogConsole.log(" slopDegree = " + slopDegree);
+       // LogConsole.log(" degree = " + degree);
 
-        int speedCost = getSpeedCost(degree, slopDegree);
-        ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
         float speed = ballInterpolator.getSpeed();
         if (speed > 0){
 
@@ -134,6 +157,9 @@ public class BallModel {
             slopDegree = degree - slopDegree + degree;
             slopDegree += 180;
         }
+
+        int speedCost = getSpeedCost(degree, slopDegree);
+        ballInterpolator.speedChange(speedCost, crashModel.ballInterpolator);
 
 
     }
