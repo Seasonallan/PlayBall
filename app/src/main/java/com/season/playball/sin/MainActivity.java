@@ -1,23 +1,16 @@
 package com.season.playball.sin;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.BaseInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, View.OnLongClickListener {
 
-    private RelativeLayout mContaintView;
+    private RelativeLayout mContainerView;
     private BallView mBallView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,30 +19,31 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-        mContaintView = new RelativeLayout(this);
-        mContaintView.setOnClickListener(this);
-        mContaintView.setOnLongClickListener(this);
+        mContainerView = new RelativeLayout(this);
+        mContainerView.setOnClickListener(this);
+        mContainerView.setOnLongClickListener(this);
 
         TextView textView = new TextView(this);
         textView.setText("Touch the Screen");
         RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         param.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mContaintView.addView(textView, param);
+        mContainerView.addView(textView, param);
 
         mBallView = new BallView(this);
-        mBallView.start();
-        mContaintView.addView(mBallView);
+        mContainerView.addView(mBallView);
 
-        setContentView(mContaintView);
+        setContentView(mContainerView);
     }
 
     @Override
     public void onClick(View v) {
-        addBall();
+        mBallView.addOneBall(mContainerView);
     }
 
-    private void addBall() {
-        mBallView.add(mContaintView);
+    @Override
+    public boolean onLongClick(View v) {
+        mBallView.clear();
+        return true;
     }
 
     @Override
@@ -64,9 +58,4 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mBallView.start();
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        mBallView.clear();
-        return true;
-    }
 }

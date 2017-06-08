@@ -28,6 +28,11 @@ public class BallInterpolatorFactory {
         return flag;
     }
 
+    /**
+     * 获取指定加速器
+     * @param flag
+     * @return
+     */
     public static IInterpolator getInterpolator(String flag){
         IInterpolator interpolator = new LinearInterpolator();
         switch (flag){
