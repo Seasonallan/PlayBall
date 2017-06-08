@@ -3,6 +3,8 @@ package com.season.playball.sin;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.season.playball.LogConsole;
+
 import java.util.Random;
 
 /**
@@ -19,14 +21,16 @@ public class BallModel {
     Paint paint;
 
     float cx, cy;
-    int speed = 10;
     double slopDegree = 3;
 
     long id;
 
+    BallInterpolator ballInterpolator;
+
     BallModel(int width, int height){
         this.width = width;
         this.height = height;
+        ballInterpolator = new BallInterpolator();
     }
 
     void randomSetUp(){
@@ -41,7 +45,7 @@ public class BallModel {
             paint = new Paint();
             paint.setColor(color);
         }
-        speed = new Random().nextInt(8) + 8;
+        ballInterpolator.randomSet();
         slopDegree = new Random().nextInt(360);
         cx = new Random().nextInt(width - radius);
         cy = new Random().nextInt(height - radius);
@@ -80,13 +84,40 @@ public class BallModel {
     void crashChanged(BallModel crashModel){
         double degree = Math.atan2((cy - crashModel.cy), (cx - crashModel.cx));
         degree = 180 * degree / Math.PI;
-        slopDegree =  degree;// - slopDegree;// + slopDegree - degree ;
+
+        LogConsole.log(id + " info");
+        LogConsole.log(" speed = " + ballInterpolator.getSpeed());
+        LogConsole.log(" slopDegree = " + slopDegree);
+        LogConsole.log(" degree = " + degree);
+
+        if (sameArea(degree, slopDegree)){
+            slopDegree =  degree;
+        }else{
+            slopDegree += 180;
+            degree += 180;
+            slopDegree = degree - slopDegree + degree;
+        }
+
+    }
+
+    /**
+     * 用于重合方向纠正
+     * @param from
+     * @param to
+     * @return
+     */
+    boolean sameArea(double from, double to){
+        int mul = (int) (from - to);
+        return mul%360 < 180;
     }
 
     public void move() {
-        cx += speed * Math.cos(slopDegree * Math.PI / 180);
-        cy += speed * Math.sin(slopDegree * Math.PI / 180);
-        fixXY();
+        float speed = ballInterpolator.getSpeed();
+        if (speed > 0){
+            cx += speed * Math.cos(slopDegree * Math.PI / 180);
+            cy += speed * Math.sin(slopDegree * Math.PI / 180);
+            fixXY();
+        }
     }
 
     void draw(Canvas canvas) {
