@@ -1,4 +1,4 @@
-package com.season.playball;
+package com.season.playball.mul;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,7 +13,7 @@ import java.util.List;
  * User: SeasonAllan(451360508@qq.com)
  * Time: 2017-06-08 11:59
  */
-public class BallView extends View implements IBallView{
+public class BallView extends View implements IBallView {
 
     int screenWidth, screenHeight;
     int id;

@@ -1,4 +1,4 @@
-package com.season.playball;
+package com.season.playball.mul;
 
 import android.graphics.Canvas;
 import android.os.Handler;
@@ -27,6 +27,7 @@ public class BallController {
     }
 
     public void start() {
+        running = true;
         this.ballModel.move();
         crashCheck();
         this.ballView.invalidate();

@@ -1,6 +1,5 @@
-package com.season.playball;
+package com.season.playball.sin;
 
-import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +12,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener, View.OnLongClickListener {
 
     private RelativeLayout mContaintView;
-
+    private BallView mBallView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +24,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mContaintView.setOnClickListener(this);
         mContaintView.setOnLongClickListener(this);
 
+        mBallView = new BallView(this);
+        mBallView.start();
+        mContaintView.addView(mBallView);
+
         setContentView(mContaintView);
     }
 
@@ -34,26 +37,24 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
     private void addBall() {
-        BallView ballView = new BallView(this, ballViews.size(), mContaintView){
-            public List<BallView> getRunningBalls(){
-                return ballViews;
-            };
-        };
-        ballView.start();
-
-        ballViews.add(ballView);
-        mContaintView.addView(ballView);
+        mBallView.add(mContaintView);
     }
 
-    private List<BallView> ballViews = new ArrayList<>();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBallView.stop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBallView.start();
+    }
 
     @Override
     public boolean onLongClick(View v) {
-        mContaintView.removeAllViews();
-        for (BallView ballView : ballViews) {
-            ballView.stop();
-        }
-        ballViews.clear();
+        mBallView.clear();
         return true;
     }
 }

@@ -1,4 +1,4 @@
-package com.season.playball;
+package com.season.playball.sin;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -21,6 +21,8 @@ public class BallModel {
     float cx, cy;
     int speed = 10;
     double slopDegree = 3;
+
+    long id;
 
     BallModel(int width, int height){
         this.width = width;

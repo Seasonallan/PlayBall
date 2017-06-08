@@ -1,4 +1,4 @@
-package com.season.playball;
+package com.season.playball.mul;
 
 import java.util.List;
 
